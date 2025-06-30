@@ -37,15 +37,15 @@ export default function Contact() {
     setStatus("loading")
 
     emailjs.send(
-      "YOUR_SERVICE_ID",
-      "YOUR_TEMPLATE_ID",
+      "service_8dw7ez2",
+      "template_zxdztja",
       {
         name: formData.name,
         email: formData.email,
         subject: formData.subject,
         message: formData.message,
       },
-      "YOUR_PUBLIC_KEY"
+      "87_U9zHvg_CGAWPgs"
     )
     .then(() => {
       setStatus("success")
