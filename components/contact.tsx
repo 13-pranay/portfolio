@@ -1,9 +1,8 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useRef } from "react"
 import { motion, useInView } from "framer-motion"
+import emailjs from "emailjs-com"
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -14,38 +13,49 @@ export default function Contact() {
     subject: "",
     message: "",
   })
+
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
   const [errors, setErrors] = useState<Record<string, string>>({})
-
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
-
     if (!formData.name.trim()) newErrors.name = "Name is required"
     if (!formData.email.trim()) newErrors.email = "Email is required"
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid"
     if (!formData.subject.trim()) newErrors.subject = "Subject is required"
     if (!formData.message.trim()) newErrors.message = "Message is required"
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!validateForm()) return
-
     setStatus("loading")
 
-    // Simulate API call
-    setTimeout(() => {
+    emailjs.send(
+      "YOUR_SERVICE_ID",
+      "YOUR_TEMPLATE_ID",
+      {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+      },
+      "YOUR_PUBLIC_KEY"
+    )
+    .then(() => {
       setStatus("success")
       setFormData({ name: "", email: "", subject: "", message: "" })
       setTimeout(() => setStatus("idle"), 3000)
-    }, 2000)
+    })
+    .catch((err) => {
+      console.error("Email error:", err)
+      setStatus("error")
+    })
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -56,11 +66,33 @@ export default function Contact() {
     }
   }
 
+  const contactItems = [
+    {
+      icon: Mail,
+      label: "Email",
+      value: "pranaymallela1910@gmail.com",
+      href: "mailto:pranaymallela1910@gmail.com",
+    },
+    {
+      icon: Phone,
+      label: "Phone",
+      value: "+91 9848147756",
+      href: "tel:+919848147756",
+    },
+    {
+      icon: MapPin,
+      label: "Location",
+      value: "Chennai",
+      href: "#",
+    },
+  ]
+
   return (
     <section id="contact" className="py-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800" />
-
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Heading */}
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 50 }}
@@ -79,6 +111,7 @@ export default function Contact() {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
+
           {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -88,28 +121,8 @@ export default function Contact() {
           >
             <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-300/20 dark:border-cyan-500/20">
               <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-cyan-400">Let's Connect</h3>
-
               <div className="space-y-6">
-                {[
-                  {
-                    icon: Mail,
-                    label: "Email",
-                    value: "pranaymallela1910@gmail.com",
-                    href: "mailto:pranaymallela1910@gmail.com",
-                  },
-                  {
-                    icon: Phone,
-                    label: "Phone",
-                    value: "+91 9848147756",
-                    href: "tel:+919848147756",
-                  },
-                  {
-                    icon: MapPin,
-                    label: "Location",
-                    value: "Chennai",
-                    href: "#",
-                  },
-                ].map((item, index) => {
+                {contactItems.map((item, index) => {
                   const Icon = item.icon
                   return (
                     <motion.a
@@ -135,8 +148,7 @@ export default function Contact() {
 
               <div className="mt-8 pt-6 border-t border-gray-300 dark:border-gray-700">
                 <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                  I'm always interested in new opportunities and exciting projects. Whether you have a question or just
-                  want to say hi, I'll try my best to get back to you!
+                  I'm always interested in new opportunities and exciting projects. Whether you have a question or just want to say hi, I’ll try my best to get back to you!
                 </p>
               </div>
             </div>
@@ -152,82 +164,32 @@ export default function Contact() {
               <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-cyan-400">Send Message</h3>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Name *
+                {["name", "email", "subject"].map((field) => (
+                  <div key={field}>
+                    <label htmlFor={field} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {field.charAt(0).toUpperCase() + field.slice(1)} *
                     </label>
                     <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
+                      type={field === "email" ? "email" : "text"}
+                      id={field}
+                      name={field}
+                      value={formData[field as keyof typeof formData]}
                       onChange={handleChange}
                       className={`w-full px-4 py-3 bg-white/50 dark:bg-gray-700/50 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                        errors.name
+                        errors[field]
                           ? "border-red-500 focus:ring-red-500/50"
                           : "border-gray-300 dark:border-gray-600 focus:border-gray-500 dark:focus:border-cyan-500 focus:ring-gray-500/50 dark:focus:ring-cyan-500/50"
                       }`}
-                      placeholder="Your name"
+                      placeholder={`Your ${field}`}
                     />
-                    {errors.name && (
+                    {errors[field] && (
                       <p className="mt-1 text-sm text-red-400 flex items-center">
                         <AlertCircle className="w-4 h-4 mr-1" />
-                        {errors.name}
+                        {errors[field]}
                       </p>
                     )}
                   </div>
-
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 bg-white/50 dark:bg-gray-700/50 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                        errors.email
-                          ? "border-red-500 focus:ring-red-500/50"
-                          : "border-gray-300 dark:border-gray-600 focus:border-gray-500 dark:focus:border-cyan-500 focus:ring-gray-500/50 dark:focus:ring-cyan-500/50"
-                      }`}
-                      placeholder="your@email.com"
-                    />
-                    {errors.email && (
-                      <p className="mt-1 text-sm text-red-400 flex items-center">
-                        <AlertCircle className="w-4 h-4 mr-1" />
-                        {errors.email}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Subject *
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-white/50 dark:bg-gray-700/50 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                      errors.subject
-                        ? "border-red-500 focus:ring-red-500/50"
-                        : "border-gray-300 dark:border-gray-600 focus:border-gray-500 dark:focus:border-cyan-500 focus:ring-gray-500/50 dark:focus:ring-cyan-500/50"
-                    }`}
-                    placeholder="What's this about?"
-                  />
-                  {errors.subject && (
-                    <p className="mt-1 text-sm text-red-400 flex items-center">
-                      <AlertCircle className="w-4 h-4 mr-1" />
-                      {errors.subject}
-                    </p>
-                  )}
-                </div>
+                ))}
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -275,13 +237,16 @@ export default function Contact() {
                 </motion.div>
 
                 {status === "success" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center justify-center p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400"
-                  >
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400">
                     <CheckCircle className="w-5 h-5 mr-2" />
-                    Message sent successfully! I'll get back to you soon.
+                    Message sent successfully!
+                  </motion.div>
+                )}
+
+                {status === "error" && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400">
+                    <AlertCircle className="w-5 h-5 mr-2" />
+                    Failed to send message. Try again later.
                   </motion.div>
                 )}
               </form>
