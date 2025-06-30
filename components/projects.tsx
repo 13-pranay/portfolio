@@ -30,7 +30,7 @@ const projects = [
     tags: ["AI", "JavaScript", "HTML", "CSS", "Game Development"],
     category: "Frontend",
     github: "https://github.com/13-pranay/Dots-Boxes",
-    live: "https://example.com",
+    live: "https://dots-boxes-2player.vercel.app/",
     featured: true,
   },
   {
@@ -43,7 +43,7 @@ const projects = [
     tags: ["AI","HCI","JavaScript", "HTML", "CSS", "Game Development"],
     category: "Frontend",
     github: "https://github.com/13-pranay/Rock-Paper-Scissor",
-    live: "https://example.com",
+    live: "https://13-pranay.github.io/Rock-Paper-Scissor/",
     featured: false,
   },
 
