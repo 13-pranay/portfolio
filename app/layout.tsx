@@ -5,15 +5,6 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
-export const metadata = {
-  title: "Pranay | Developer Portfolio",
-  description: "Portfolio website of Pranay Mallela – Developer, Coder, AI Enthusiast.",
-  keywords: ["Pranay Mallela", "Portfolio", "Developer", "Next.js", "AI", "Projects", "India"],
-  authors: [{ name: "Pranay Mallela" }],
-  other: {
-    "google-site-verification": "ZpHQhWzJdFhIiCUuIr_WxBvefmnRUZby6-byNa7OHrU"
-  }
-}
 
 export const metadata: Metadata = {
   title: "Pranay - Developer",
@@ -48,6 +39,9 @@ export const metadata: Metadata = {
     },
   },
     generator: 'pranay.dev'
+    other: {
+      "google-site-verification": "ZpHQhWzJdFhIiCUuIr_WxBvefmnRUZby6-byNa7OHrU"
+    }
 }
 
 export default function RootLayout({
