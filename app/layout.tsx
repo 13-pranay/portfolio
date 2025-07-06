@@ -38,7 +38,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-    generator: 'pranay.dev'
+    generator: 'pranay.dev',
     other: {
       "google-site-verification": "ZpHQhWzJdFhIiCUuIr_WxBvefmnRUZby6-byNa7OHrU"
     }
